@@ -78,10 +78,13 @@ def choose_a_mode(intent, session):
     """
 
     card_title = intent['name']
-    rolls = intent['slots']['Mode']['value']
+    SelectedMode = intent['slots']['Mode']['value']
     session_attributes = {}
     should_end_session = False
-    speech_output = "I learned " + rolls
+    if SelectedMode == "programming" or SelectedMode == "code" or SelectedMode == "program":
+        speech_output = "What programming language do you want to learn?"
+    else:
+        speech_output = "I will make your journey more entertaining. Where are we travelling?"
     reprompt_text = "Can you repeat please?"
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
