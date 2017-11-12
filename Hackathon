@@ -9,7 +9,7 @@ http://amzn.to/1LGWsLG
 
 from __future__ import print_function
 from weather import Weather
-
+import random
 
 # --------------- Helpers that build all of the responses ----------------------
 
@@ -50,6 +50,10 @@ def getWeatherData(loccity):
     weatherData = condition._condition_data  # dictionary type. get the .['text'] and .['temp'] keys.
     return "Weather in " + loccity + "is" + weatherData['text'] + "and is " + str(((int(weatherData['temp']))-32.0)*(5.0/9.0)) + "degrees Celsius."
 
+def rock_paper_scissors():
+    hand = ["Rock","Paper","Scissors","Paper","Paper","Rock","Scissors","Paper"]
+    numb=(numb+1)%7
+    return hand[numb]
 
 # --------------- Functions that control the skill's behavior ------------------
 
@@ -145,8 +149,25 @@ def get_weather(intent, session):
     cityy = intent['slots']['City']['value']
     session_attributes = {}
     should_end_session = False
-    speech_output = getWeatherData(cityy)
+    speech_output = getWeatherData(cityy) + "Let's play Rock Paper Scissors"
     reprompt_text = "Can you repeat please?"
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
+
+def play_game(intent, session):
+    card_title = intent['name']
+    RoPaSc = intent['slots']['Game']['value']
+    session_attributes = {}
+    should_end_session = False
+    randomm = "rock"#rock_paper_scissors()
+    if RoPaSc == randomm:
+        speech_output = "It is a draw, I also chose" + RoPaSc
+    elif (RoPaSc == "rock" and randomm == "paper") or (RoPaSc == "paper" and randomm == "scissors") or (RoPaSc =="scissors" and randomm == "rock"):
+        speech_output = "I won, I chose" + randomm
+    else:
+        speech_output = "You won, I chose" + randomm
+    reprompt_text = "Let's try again"
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -191,6 +212,8 @@ def on_intent(intent_request, session):
         return choose_an_algorithm(intent, session)
     elif intent_name == "Weather":
         return get_weather(intent, session)
+    elif intent_name == "RPS":
+        return play_game(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
